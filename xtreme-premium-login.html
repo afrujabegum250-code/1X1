@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTREME - Premium Login Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* ==================== 3D BACKGROUND ANIMATION ==================== */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            z-index: 1;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        /* Floating geometric shapes */
+        .floating-shape {
+            position: absolute;
+            opacity: 0.08;
+            filter: blur(1px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent);
+            border-radius: 50%;
+            top: -200px;
+            left: -200px;
+            animation: float 25s infinite ease-in-out;
+        }
+
+        .shape-2 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), transparent);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            bottom: -250px;
+            right: -250px;
+            animation: float 30s infinite ease-in-out reverse;
+        }
+
+        .shape-3 {
+            width: 300px;
+            height: 300px;
+            background: conic-gradient(from 45deg, rgba(255, 255, 255, 0.2), transparent);
+            top: 50%;
+            right: -150px;
+            animation: float 35s infinite ease-in-out;
+        }
+
+        .shape-4 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            bottom: 10%;
+            left: -175px;
+            animation: float 28s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) translateX(0px) rotateZ(0deg);
+            }
+            25% {
+                transform: translateY(-30px) translateX(20px) rotateZ(5deg);
+            }
+            50% {
+                transform: translateY(-60px) translateX(-20px) rotateZ(-5deg);
+            }
+            75% {
+                transform: translateY(-30px) translateX(30px) rotateZ(3deg);
+            }
+        }
+
+        /* Volumetric lighting effect */
+        .volumetric-light {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.1), transparent 70%);
+            pointer-events: none;
+            animation: lightFluctuation 8s ease-in-out infinite;
+        }
+
+        @keyframes lightFluctuation {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Subtle grid effect */
+        .grid-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.02) 25%, rgba(255, 255, 255, 0.02) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.02) 75%, rgba(255, 255, 255, 0.02) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.02) 25%, rgba(255, 255, 255, 0.02) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.02) 75%, rgba(255, 255, 255, 0.02) 76%, transparent 77%, transparent);
+            background-size: 80px 80px;
+            pointer-events: none;
+        }
+
+        /* ==================== LOGIN CONTAINER ==================== */
+        .login-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            perspective: 1000px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 450px;
+            padding: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 
+                0 0 60px rgba(255, 255, 255, 0.1),
+                inset 0 0 60px rgba(255, 255, 255, 0.05),
+                0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== HEADER ==================== */
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-text {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+            }
+            50% {
+                filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.2));
+            }
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .divider {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            margin: 15px auto 0;
+        }
+
+        /* ==================== INPUT FIELD ==================== */
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .input-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            z-index: 1;
+        }
+
+        .input-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            pointer-events: none;
+            border-radius: 6px;
+            z-index: 1;
+        }
+
+        .license-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+
+        .license-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .license-input:focus {
+            outline: none;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+
+        /* ==================== LOGIN BUTTON ==================== */
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 100%);
+            border: none;
+            border-radius: 6px;
+            color: #0a0a0a;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.9);
+        }
+
+        .login-button:hover::before {
+            left: 100%;
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+            box-shadow: 
+                0 5px 15px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        /* ==================== FOOTER ==================== */
+        .login-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .footer-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: 20px 0;
+        }
+
+        .security-badge {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .security-dot {
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 600px) {
+            .login-box {
+                max-width: 90%;
+                padding: 40px 25px;
+                margin: 20px;
+            }
+
+            .logo-text {
+                font-size: 28px;
+                letter-spacing: 3px;
+            }
+
+            .login-header {
+                margin-bottom: 30px;
+            }
+
+            .input-label {
+                font-size: 10px;
+            }
+
+            .license-input,
+            .login-button {
+                font-size: 13px;
+                padding: 12px;
+            }
+
+            .floating-shape {
+                opacity: 0.04;
+            }
+        }
+
+        /* ==================== SUCCESS STATE ==================== */
+        .success-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            z-index: 101;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .success-page.active {
+            display: flex;
+        }
+
+        .success-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Container -->
+    <div class="background-container">
+        <!-- Floating Geometric Shapes -->
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+
+        <!-- Volumetric Lighting -->
+        <div class="volumetric-light"></div>
+
+        <!-- Grid Overlay -->
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="login-wrapper">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo-text">XTREME</div>
+                <p class="subtitle">PREMIUM LOGIN PANEL</p>
+                <div class="divider"></div>
+            </div>
+
+            <!-- License Key Input -->
+            <div class="input-group">
+                <label class="input-label">License Key</label>
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        class="license-input" 
+                        id="licenseInput"
+                        placeholder="Enter your license key..."
+                        autocomplete="off"
+                    />
+                </div>
+            </div>
+
+            <!-- Login Button -->
+            <button class="login-button" onclick="handleLogin()">LOGIN</button>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <div class="footer-divider"></div>
+                <div class="security-badge">
+                    <span class="security-dot"></span>
+                    <span>SECURED CONNECTION</span>
+                    <span class="security-dot"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Page -->
+    <div class="success-page" id="successPage">
+        <div class="success-icon">✓</div>
+        <div class="success-message">Welcome to XTREME</div>
+    </div>
+
+    <script>
+        // Handle login
+        function handleLogin() {
+            const input = document.getElementById('licenseInput');
+            const loginBtn = document.querySelector('.login-button');
+            
+            if (input.value.trim() === '') {
+                input.style.borderColor = 'rgba(255, 100, 100, 0.5)';
+                input.style.boxShadow = '0 0 20px rgba(255, 100, 100, 0.2)';
+                setTimeout(() => {
+                    input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    input.style.boxShadow = '';
+                }, 2000);
+                return;
+            }
+
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'AUTHENTICATING...';
+
+            // Simulate authentication delay
+            setTimeout(() => {
+                // Show success page
+                document.querySelector('.login-wrapper').style.display = 'none';
+                document.getElementById('successPage').classList.add('active');
+
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    document.querySelector('.login-wrapper').style.display = 'flex';
+                    document.getElementById('successPage').classList.remove('active');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'LOGIN';
+                    input.value = '';
+                }, 3000);
+            }, 1500);
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('licenseInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        // Focus effect animation
+        document.getElementById('licenseInput').addEventListener('focus', function() {
+            this.parentElement.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+        });
+
+        document.getElementById('licenseInput').addEventListener('blur', function() {
+            this.parentElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        });
+    </script>
+</body>
+</html>
