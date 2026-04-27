@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Authentication Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Corner Glow Effects */
+        .corner-glow {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        .glow-top-left {
+            top: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .glow-bottom-right {
+            bottom: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        /* Main Container */
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 500px;
+            background: linear-gradient(135deg, rgba(15, 22, 41, 0.9), rgba(26, 31, 58, 0.9));
+            border: 2px solid #00d9ff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3),
+                        inset 0 0 20px rgba(0, 217, 255, 0.05);
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 217, 255, 0.3), inset 0 0 20px rgba(0, 217, 255, 0.05); }
+            50% { box-shadow: 0 0 40px rgba(0, 217, 255, 0.5), inset 0 0 30px rgba(0, 217, 255, 0.1); }
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00ffff;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .header p {
+            font-size: 12px;
+            color: #888888;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+
+        .header-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #00d9ff, transparent);
+            margin: 16px 40px;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 11px;
+            color: #00d9ff;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+            border: 2px solid #00d9ff;
+            border-radius: 8px;
+            background: #0f1629;
+            padding: 12px;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4),
+                        inset 0 0 10px rgba(0, 217, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:hover,
+        .input-wrapper:focus-within {
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6),
+                        inset 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #00ffff;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            padding: 8px 0;
+            caret-color: #00ffff;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(0, 255, 255, 0.3);
+        }
+
+        .input-help {
+            font-size: 10px;
+            color: #555555;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 40px;
+            background: #0f1629;
+            border: 1px solid #1a2538;
+            border-radius: 6px;
+            padding: 0 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(0, 255, 255, 0.8); }
+            50% { opacity: 0.6; box-shadow: 0 0 5px rgba(0, 255, 255, 0.4); }
+        }
+
+        .status-text {
+            font-size: 11px;
+            color: #888888;
+        }
+
+        /* Verify Button */
+        .verify-btn {
+            width: 100%;
+            height: 48px;
+            background: #00d9ff;
+            border: 1.5px solid #00ffff;
+            border-radius: 6px;
+            color: #0a0e27;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .verify-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .verify-btn:hover {
+            background: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8),
+                        inset 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .verify-btn:hover::before {
+            left: 100%;
+        }
+
+        .verify-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Footer Links */
+        .footer-section {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .footer-text {
+            font-size: 10px;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+
+        .footer-link {
+            font-size: 10px;
+            color: #00d9ff;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .footer-link:hover {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Security Info */
+        .security-info {
+            border: 1px solid #1a2538;
+            border-radius: 6px;
+            padding: 16px;
+            background: #0a0e27;
+            font-size: 9px;
+            color: #666666;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Glitch Animation */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-trigger:active {
+            animation: glitch 0.2s ease-in-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .auth-container {
+                padding: 30px 20px;
+                border-radius: 8px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+
+            .input-wrapper input {
+                font-size: 14px;
+            }
+
+            .verify-btn {
+                height: 44px;
+                font-size: 12px;
+            }
+        }
+
+        /* Subtle Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(0, 217, 255, 0.05) 25%, rgba(0, 217, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 217, 255, 0.05) 75%, rgba(0, 217, 255, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 217, 255, 0.05) 25%, rgba(0, 217, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 217, 255, 0.05) 75%, rgba(0, 217, 255, 0.05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Grid Background -->
+    <div class="grid-bg"></div>
+
+    <!-- Corner Glows -->
+    <div class="corner-glow glow-top-left"></div>
+    <div class="corner-glow glow-bottom-right"></div>
+
+    <!-- Main Authentication Container -->
+    <div class="auth-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>KEY AUTHENTICATION</h1>
+            <p>Secure Access Portal</p>
+            <div class="header-divider"></div>
+        </div>
+
+        <!-- License Key Input -->
+        <div class="input-section">
+            <label class="input-label">License Key / Serial Code</label>
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="licenseInput" 
+                    placeholder="XXXX-XXXX-XXXX-XXXX"
+                    maxlength="23"
+                />
+            </div>
+            <div class="input-help">Enter your license key to access the application</div>
+        </div>
+
+        <!-- Status Indicator -->
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span class="status-text">Ready for verification</span>
+        </div>
+
+        <!-- Verify Button -->
+        <button class="verify-btn glitch-trigger" onclick="verifyLicense()">Verify License</button>
+
+        <!-- Footer Links -->
+        <div class="footer-section">
+            <p class="footer-text">Don't have a license key?</p>
+            <span class="footer-link" onclick="requestAccess()">Request Access</span>
+        </div>
+
+        <!-- Security Info -->
+        <div class="security-info">
+            🔒 All transmissions are encrypted with military-grade security protocols
+        </div>
+    </div>
+
+    <script>
+        // Format license key input
+        const licenseInput = document.getElementById('licenseInput');
+        
+        licenseInput.addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+            
+            // Add dashes every 4 characters
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0 && value[i] !== '-') {
+                    formatted += '-';
+                }
+                formatted += value[i];
+            }
+            
+            e.target.value = formatted;
+        });
+
+        // Verify License Function
+        function verifyLicense() {
+            const license = licenseInput.value.trim();
+            
+            if (!license || license.length < 11) {
+                alert('Please enter a valid license key');
+                return;
+            }
+
+            // Simulate verification
+            const btn = document.querySelector('.verify-btn');
+            btn.disabled = true;
+            btn.textContent = 'VERIFYING...';
+
+            setTimeout(() => {
+                // Simulate success
+                alert('License verified successfully!');
+                btn.disabled = false;
+                btn.textContent = 'VERIFY LICENSE';
+                licenseInput.value = '';
+            }, 2000);
+        }
+
+        // Request Access Function
+        function requestAccess() {
+            alert('Opening access request page...');
+            // window.open('https://your-domain.com/request', '_blank');
+        }
+
+        // Enter key to verify
+        licenseInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyLicense();
+            }
+        });
+    </script>
+</body>
+</html>
